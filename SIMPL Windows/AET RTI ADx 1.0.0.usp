@@ -1,0 +1,99 @@
+#DEFINE_CONSTANT MAX_ZONES 16
+
+//#ENABLE_TRACE
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #HINT ""
+
+#ENABLE_STACK_CHECKING
+#ENABLE_DYNAMIC 
+#DEFAULT_VOLATILE
+
+#HELP_BEGIN
+INPUTS:
+Mute_State: High = mute on. Low = mute off;
+Source: Selects Source. (>0 Turns zone on. = 0 turns zone off);
+Volume: 0% - 100%
+Treble/Bass: -120d to +120d
+
+OUTPUTS:
+TX$: Connect to TCP/IP Client on port 23
+
+Copyright (C) 2023 Anthony Evert 
+Programmer: 		Tony Evert / tony722@gmail.com
+Version:   			1.0.0
+
+#HELP_END
+
+/*******************************************************************************************
+  Include Libraries
+*******************************************************************************************/
+#USER_SIMPLSHARP_LIBRARY "AET.RTI.ADx"
+
+/*******************************************************************************************
+  Inputs
+*******************************************************************************************/
+DIGITAL_INPUT Init, Mute_State[MAX_ZONES, MAX_ZONES];
+ANALOG_INPUT Source[MAX_ZONES], Volume[MAX_ZONES];
+ANALOG_INPUT Treble[MAX_ZONES], Bass[MAX_ZONES, MAX_ZONES];
+/*******************************************************************************************
+  Outputs
+*******************************************************************************************/
+STRING_OUTPUT  TX$;
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+AdxController adx;
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+callback function Tx(string value) { TX$ = value; }
+
+function RegisterDelegates() {
+	RegisterDelegate(adx, Tx, Tx);
+}
+/*******************************************************************************************
+  Events
+*******************************************************************************************/
+PUSH Init { RegisterDelegates(); }
+	
+CHANGE Mute_State { 
+	integer zone;
+  zone = GetLastModifiedArrayIndex();
+	adx.Mute(zone, Mute_State[zone]); 
+}
+
+CHANGE Source {
+	integer zone;
+  zone = GetLastModifiedArrayIndex();
+	adx.Source(zone, Source[zone]);
+}
+
+CHANGE Volume {
+	integer zone;
+  zone = GetLastModifiedArrayIndex();
+	adx.Volume(zone, Volume[zone]);
+}
+
+CHANGE Treble {
+	integer zone;
+  zone = GetLastModifiedArrayIndex();
+	adx.Treble(zone, Treble[zone]);
+}
+
+
+CHANGE Bass {
+	integer zone;
+  zone = GetLastModifiedArrayIndex();
+	adx.Bass(zone, Bass[zone]);
+}
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+//Function Main() { }
