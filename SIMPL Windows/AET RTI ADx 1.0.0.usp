@@ -13,13 +13,14 @@
 
 #HELP_BEGIN
 INPUTS:
-Mute_State: High = mute on. Low = mute off;
-Source: Selects Source. (>0 Turns zone on. = 0 turns zone off);
+Init: Must be pulsed before module will work
+Mute_State: High = mute on. Low = mute off
+Source: Selects Source. (>0 Turns zone on. = 0 turns zone off)
 Volume: 0% - 100%
 Treble/Bass: -120d to +120d
 
 OUTPUTS:
-TX$: Connect to TCP/IP Client on port 23
+TX$: Connect to RS232 port (9600,N,8,1) or TCP/IP Client on port 23 (TCP is unreliable)
 
 Copyright (C) 2023 Anthony Evert 
 Programmer: 		Tony Evert / tony722@gmail.com
