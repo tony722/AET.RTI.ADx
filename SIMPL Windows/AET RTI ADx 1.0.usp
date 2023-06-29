@@ -24,7 +24,7 @@ TX$: Connect to RS232 port (9600,N,8,1) or TCP/IP Client on port 23 (TCP is unre
 
 Copyright (C) 2023 Anthony Evert 
 Programmer: 		Tony Evert / tony722@gmail.com
-Version:   			1.0.0
+Version:   			1.0.1
 
 #HELP_END
 

@@ -11,19 +11,21 @@
 [END]
 [BEGIN]
   ObjTp=Hd
-  Cmn1=INPUTS:\\Mute_State: High = mute on. Low = mute off;\\Source: Selects||1
-  Cmn2=Source. (>0 Turns zone on. = 0 turns zone off);\\Volume: 0% - 100%\\
-  Cmn3=Treble/Bass: -120d to +120d\\\\OUTPUTS:\\TX$: Connect to TCP/IP||1
-  Cmn4=Client on port 23\\\\Copyright (C) 2023 Anthony Evert \\Programmer:
-  Cmn5=||1		Tony Evert / tony722@gmail.com\\Version:   			1.0.0\\
+  Cmn1=INPUTS:\\Init: Must be pulsed before module will work\\Mute_State:
+  Cmn2=||1High = mute on. Low = mute off\\Source: Selects Source. (>0 Turns||1
+  Cmn3=zone on. = 0 turns zone off)\\Volume: 0% - 100%\\Treble/Bass: -120d||1
+  Cmn4=to +120d\\\\OUTPUTS:\\TX$: Connect to RS232 port (9600,N,8,1) or||1
+  Cmn5=TCP/IP Client on port 23 (TCP is unreliable)\\\\Copyright (C) 2023||1
+  Cmn6=Anthony Evert \\Programmer: 		Tony Evert / tony722@gmail.com\\Version:
+  Cmn7=||3			1.0.1\\
 [END]
 [BEGIN]
   ObjTp=Symbol
   Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,362,378,380,405,407,408,409,478,522,537,554,586,590,611,624,718,756,767,830,841,842,854,883,955,1032,1062,1079,1128,1129,1134,1140,1157,1158,1195,1199,1220,1221,1222,1223,1299,1348,1349,1439,1472,1473,1499,1746,1803,1975,2229,2354,2514,2523,2532,2706,2707,3235,3236,3427,3454,3567,3568,3601,3602,3708,3902,3903,3912,3918,3925,3926,4206,4207,
   Exclusions_CDS=5
   Inclusions_CDS=6,7
-  Name=AET RTI ADx 1.0.0
-  SmplCName=AET RTI ADx 1.0.0.usp
+  Name=AET RTI ADx 1.0
+  SmplCName=AET RTI ADx 1.0.usp
   Code=1
   SysRev5=4.000
   SMWRev=3.00.00
@@ -132,9 +134,9 @@
   OutputList2Cue1=TX$
   OutputList2SigType1=Serial
   ParamCue1=[Reference Name]
-  MinVariableInputs=2
+  MinVariableInputs=17
   MaxVariableInputs=17
-  MinVariableInputsList2=49
+  MinVariableInputsList2=64
   MaxVariableInputsList2=64
   MinVariableOutputs=0
   MaxVariableOutputs=0
@@ -163,9 +165,9 @@
   SmplCOutputCue1=i#
   SmplCInputList2Cue1=an#
   SmplCOutputList2Cue1=ai#
-  SPlus2CompiledName=S2_AET_RTI_ADx_1_0_0
+  SPlus2CompiledName=S2_AET_RTI_ADx_1_0
   SymJam=NonExclusive
-  FileName=AET RTI ADx 1.0.0.ush
+  FileName=AET RTI ADx 1.0.ush
   SIMPLPlusModuleEncoding=0
   clz1=AET.RTI.ADx
 [END]
@@ -174,8 +176,4 @@
   H=1
   Tp=1
   NoS=False
-[END]
-[BEGIN]
-ObjTp=Status
-HeaderCompatible=False
 [END]
