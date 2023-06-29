@@ -3,7 +3,7 @@
 For RS-232 control, but also allows TCP/IP control on port 23. However at the time of writing this module, the TCP/IP was unreliable because the RTI tends to lock up the port and has to be rebooted.
 
 To use, download the latest module:
-[AET RTI ADx 1.0.0.zip](https://github.com/tony722/AET.RTI.ADx/raw/main/Simpl%20Windows/AET%20RTI%20ADx%201.0.0.zip)
+[AET RTI ADx 1.0.1.zip](https://github.com/tony722/AET.RTI.ADx/releases/download/v1.0.1/AET.RTI.ADx.1.0.zip)
 
 ## Inputs
 * **Init:** *Initialize module. Must be run before first use.*
