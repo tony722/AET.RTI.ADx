@@ -12,7 +12,7 @@ namespace AET.RTI.ADx.Tests {
     private readonly AdxController adx = new AdxController();
     private readonly TestTimer timer = new TestTimer { ElapseImmediately = true};
     private readonly List<string> lastCommands = new List<string>();
-    
+
     private string LastCommand {
       get { return lastCommands.LastOrDefault(); }
     }
@@ -22,6 +22,7 @@ namespace AET.RTI.ADx.Tests {
       adx.Mutex = new TestMutex();
       adx.Timer = timer;
       adx.Tx = s => lastCommands.Add(s.ToString());
+      for(var i = 1; i <= 16; i++) adx.zonePowerStatus[i] = true;
     }
 
     [TestMethod]
@@ -86,6 +87,7 @@ namespace AET.RTI.ADx.Tests {
 
     [TestMethod]
     public void Source_ZoneIsOff_TurnsOnZone() {
+      adx.zonePowerStatus[3] = false;
       adx.Source(3, 3);
       lastCommands[0].Should().Be("*ZN03PWR01\r");
       lastCommands[1].Should().Be("*ZN03SRC03\r");
@@ -115,6 +117,16 @@ namespace AET.RTI.ADx.Tests {
       LastCommand.Should().Be("*ZN03MUT01\r");
       adx.Mute(3, 0);
       LastCommand.Should().Be("*ZN03MUT00\r");
+    }
+
+    [TestMethod]
+    public void ZoneIsOff_VolumeMuteTrebAndBass_ShouldNotSend() {
+      adx.zonePowerStatus[1] = false;
+      adx.Mute(1,1);
+      adx.Volume(1,100);
+      adx.Treble(1,-30);
+      adx.Bass(1, -30);
+      lastCommands.Count.Should().Be(0);
     }
   }
 }

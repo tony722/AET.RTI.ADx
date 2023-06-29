@@ -4,17 +4,25 @@ using Crestron.SimplSharp;
 using AET.Unity.SimplSharp;
 using AET.Unity.SimplSharp.Timer;
 using Crestron.SimplSharp.Ssh.Common;
+using System.Security.Policy;
 
 namespace AET.RTI.ADx {
   public class AdxController {
-    private TxQueue<string> queue;
-    private const int spaceAfterVolumeMs = 15;
-    public AnyKeyDictionary<int, bool> zonePowerStatus = new AnyKeyDictionary<int, bool>();
+    private readonly TxQueue<string> queue;
+    private const int spaceAfterVolumeMs = 300;
+    private const int spaceAfterCommands = 500;
+    internal readonly AnyKeyDictionary<int, bool> zonePowerStatus = new AnyKeyDictionary<int, bool>();
+    internal readonly AnyKeyDictionary<int, ushort> zoneMuteStatus = new AnyKeyDictionary<int, ushort>();
+    internal readonly AnyKeyDictionary<int, ushort> zoneCurrentSource = new AnyKeyDictionary<int, ushort>();
+    internal readonly AnyKeyDictionary<int, ushort> zoneVolumeLevel = new AnyKeyDictionary<int, ushort>();
+    private SetStringOutputDelegate tx;
+    
     public AdxController() {
       SetupDelegatePlaceholders();
-      queue = new TxQueue<string>(s => Tx(s), 30);
+      queue = new TxQueue<string>(s => Tx(s), spaceAfterCommands);
     }
 
+    
     private void SetupDelegatePlaceholders() {
       Tx = delegate { };
     }
@@ -33,6 +41,14 @@ namespace AET.RTI.ADx {
       queue.Send(FormatCommand(value));
     }
 
+    private void Send(string value, int spaceAfterCommand) {
+      queue.Send(FormatCommand(value), spaceAfterCommand);
+    }
+
+    private void Send(string value, int spaceBeforeCommand, int spaceAfterCommand) {
+      queue.Send(FormatCommand(value), spaceBeforeCommand, spaceAfterCommand);
+    }
+
     private void SendLowPriority(string value, string category) {
       queue.SendLowPriority(FormatCommand(value), category);
     }
@@ -47,33 +63,51 @@ namespace AET.RTI.ADx {
     }
 
     public void PowerOn(ushort zone) {
-      zonePowerStatus[zone] = true;
       Send(string.Format("ZN{0:00}PWR01", zone));
+      if (zonePowerStatus[zone] != true) {
+        zonePowerStatus[zone] = true;
+        Source(zone, zoneCurrentSource[zone]);
+        Mute(zone, zoneMuteStatus[zone]);
+        Volume(zone, zoneVolumeLevel[zone]);
+        queue.EnableLowPriorityQueue("vol" + zone);
+      }
     }
 
     public void PowerOff(ushort zone) {
+      queue.DisableLowPriorityQueue("vol" + zone);
       zonePowerStatus[zone] = false;
-      Send(string.Format("ZN{0:00}PWR00", zone));
+      Send(string.Format("ZN{0:00}PWR00", zone), 250, 500);
     }
 
     public void Source(ushort zone, ushort input) {
+      zoneCurrentSource[zone] = input;
       if (input == 0) {
         PowerOff(zone);
         return;
       }
       if (!zonePowerStatus[zone]) PowerOn(zone);
-      Send(string.Format("ZN{0:00}SRC{1:00}", zone, input));
+      else Send(string.Format("ZN{0:00}SRC{1:00}", zone, input));
     }
 
     public void Volume(ushort zone, ushort level) {
+      zoneVolumeLevel[zone] = level; ;
+      if (!zonePowerStatus[zone]) return;
       SendLowPriority(string.Format("ZN{0:00}VOL{1:00}", zone, ConvertVolumeLevelToRti(level)),"vol" + zone, spaceAfterVolumeMs);
     }
 
+    public void Mute(ushort zone, ushort state) {
+      zoneMuteStatus[zone] = state;
+      if (!zonePowerStatus[zone]) return;
+      Send(string.Format("ZN{0:00}MUT{1:00}", zone, state));
+    }
+    
     public void Treble(ushort zone, short level) {
+      if (!zonePowerStatus[zone]) return;
       SendLowPriority(string.Format("ZN{0:00}TRB{1:00}", zone, ConvertTrebleBassToRti(level)), "tre" + zone, spaceAfterVolumeMs);
     }
 
     public void Bass(ushort zone, short level) {
+      if (!zonePowerStatus[zone]) return;
       SendLowPriority(string.Format("ZN{0:00}BAS{1:00}", zone, ConvertTrebleBassToRti(level)), "bas" + zone, spaceAfterVolumeMs);
     }
 
@@ -90,10 +124,9 @@ namespace AET.RTI.ADx {
     }
     #endregion
 
-    public void Mute(ushort zone, ushort state) {
-      Send(string.Format("ZN{0:00}MUT{1:00}", zone, state));
+    public SetStringOutputDelegate Tx {
+      get { return tx; }
+      set { tx = value; }
     }
-
-    public SetStringOutputDelegate Tx { get; set; }
   }
 }
